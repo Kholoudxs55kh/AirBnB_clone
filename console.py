@@ -18,7 +18,7 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = '(hbnb) '
     Classes_Name = ['BaseModel', 'User', 'City', 'State'
-                   'Amenity', 'Place', 'Review']
+                    'Amenity', 'Place', 'Review']
 
     def do_quit(self, line):
         """Quits The Program
