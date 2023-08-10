@@ -46,6 +46,7 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
         # now in the 1st arg we have the Class Name,
@@ -65,11 +66,13 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
 
-        if len(line) == 1:
+        if len(args) == 1:
             print("** instance id missing **")
+            return
 
         all_ = models.storage.all()
 
@@ -78,6 +81,7 @@ class HBNBCommand(cmd.Cmd):
             print(all_[id_])
         else:
             print('** no instance found **')
+            return
 
     def do_destroy(self, line):
         """Deletes an instance based on the class name and id"""
@@ -89,11 +93,13 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
 
-        if len(line) == 1:
+        if len(args) == 1:
             print("** instance id missing **")
+            return
 
         all_ = models.storage.all()
         id_ = args[0] + "." + args[1]
@@ -102,6 +108,7 @@ class HBNBCommand(cmd.Cmd):
             models.storage.save()
         else:
             print('** no instance found **')
+            return
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
@@ -117,6 +124,7 @@ class HBNBCommand(cmd.Cmd):
                         print([str(value)])
             else:
                 print("** class doesn't exist **")
+                return
 
     def do_update(self):
         pass
