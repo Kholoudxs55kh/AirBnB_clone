@@ -151,7 +151,7 @@ class HBNBCommand(cmd.Cmd):
                 setattr(all_[id_], args[2], args[3][1:-1])
             else:
                 setattr(all_[id_], args[2], args[3])
-            models.storage.save()
+            all_[id_].save()
         else:
             print('** no instance found **')
             return
