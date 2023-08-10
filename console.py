@@ -3,6 +3,7 @@
 entry point of the command interpreter"""
 import cmd
 from models.base_model import BaseModel
+import models
 
 
 class HBNBCommand(cmd.Cmd):
@@ -46,8 +47,29 @@ class HBNBCommand(cmd.Cmd):
 
         print(className.id)
 
-    def do_show(self):
-        pass
+    def do_show(self, line):
+        """Prints the string representation of an instance"""
+        if len(line) == 0:
+            print("** class name missing **")
+            return
+        args = line.split(" ")
+
+        try:
+            if args[0] not in self.Classes_Name:
+                print("** class doesn't exist **")
+        except NameError:
+            pass
+
+        if len(line) == 1:
+            print("** instance id missing **")
+
+        all_ = models.storage.all()
+
+        id_ = args[0] + "." + args[1]
+        if id_ in all_:
+            print(all_[id_])
+        else:
+            print('** no instance found **')
 
     def do_destroy(self):
         pass
