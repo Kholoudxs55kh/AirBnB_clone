@@ -3,6 +3,13 @@
 entry point of the command interpreter"""
 import cmd
 from models.base_model import BaseModel
+from models.base_model import BaseModel
+from models.user import User
+from models.state import State
+from models.city import City
+from models.amenity import Amenity
+from models.place import Place
+from models.review import Review
 import models
 
 
@@ -10,7 +17,8 @@ class HBNBCommand(cmd.Cmd):
     """Class Constructor"""
 
     prompt = '(hbnb) '
-    Classes_Name = ['BaseModel']
+    Classes_Name = ['BaseModel', 'User', 'City', 'State'
+                   'Amenity', 'Place', 'Review']
 
     def do_quit(self, line):
         """Quits The Program
