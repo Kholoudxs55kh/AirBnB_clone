@@ -19,6 +19,7 @@ class HBNBCommand(cmd.Cmd):
     prompt = '(hbnb) '
     Classes_Name = ['BaseModel', 'User', 'City', 'State'
                     'Amenity', 'Place', 'Review']
+    Methods = ["all", "count", "show", "update", "destroy", "create"]
 
     def do_quit(self, line):
         """Quits The Program
@@ -151,7 +152,7 @@ class HBNBCommand(cmd.Cmd):
                 setattr(all_[id_], args[2], args[3][1:-1])
             else:
                 setattr(all_[id_], args[2], args[3])
-            models.storage.save()
+            all_[id_].save()
         else:
             print('** no instance found **')
             return
@@ -165,6 +166,133 @@ class HBNBCommand(cmd.Cmd):
             return
 
         if len(args) > 4:
+            pass
+
+# User.show("246c227a-d5c1-403d-9bc7-6a47bb9f0f68")
+    def default(self, line):
+        if "." in line or "(" in line or "," in line:
+            all_ = models.storage.all()
+            class_ = line[: line.index(".")]
+            method_ = line[line.index(".") + 1: line.index("(")]
+            # if line[line.index("(") + 1] == ")":
+            # idd = line[line.index("(") + 1: line.index(")")]
+            # method_ = line[line.index(".") + 1: line.index("(")]
+
+            if line[line.index("(") + 1] != ")":
+                # class_ = line[: line.index(".")]
+                # method_ = line[line.index(".") + 1: line.index("(")]()
+                l_i = line.index("(")
+                if " " in line[l_i + 1:] or "," in line[l_i + 1:]:
+                    args = line[line.index("(") + 1: -1].split(", ")
+        # User.update("id", {'first_name': "John", "age": 89})
+                    # if len(args) == 3:
+                    #     _id = args[0][1:-1]
+                    #     _attName = args[1]
+                    #     _attValue = args[2]
+                    # elif len(args) == 2:
+                    #     _id = args[0][1:-1]
+                    #     if args[1].startswith("{"):
+                    #         _dict = args[1]
+                else:
+                    _id = line[line.index("(") + 2: line.index(")") - 1]
+
+            if class_ in self.Classes_Name and method_ in self.Methods:
+                if method_ == "all":
+                    for value in all_.values():
+                        if value.__class__.__name__ == class_:
+                            print([str(value)])
+                    return
+
+                elif method_ == "count":
+                    count = 0
+                    for value in all_.values():
+                        if value.__class__.__name__ == class_:
+                            count += 1
+                    print(int(count))
+                    return
+            # User.show("246c227a-d5c1-403d-9bc7-6a47bb9f0f68")
+                elif method_ == "show":
+                    id_ = class_ + "." + _id
+                    # print("Show!")
+                    if id_ in all_:
+                        print(all_[id_])
+                        # print("Show!")
+                        return
+                    else:
+                        print('** no instance found **')
+                        return
+                elif method_ == "destroy":
+                    id_ = class_ + "." + _id
+                    if id_ in all_:
+                        del (all_[id_])
+                        models.storage.save()
+                        return
+                    else:
+                        print('** no instance found **')
+                        return
+                elif method_ == "update":
+                    _dict = {}
+                    # id_ = class_ + "." + _id
+                    if len(args) == 3:
+                        _id = args[0][1:-1]
+                        _attName = args[1]
+                        _attValue = args[2]
+                    elif len(args) == 2:
+                        _id = args[0][1:-1]
+                        if args[1].startswith("{"):
+                            for key, value in args[1]:
+                                _dict[key] = value
+# User.update("id", {'first_name': "John", "age": 89})
+                    id_ = class_ + "." + _id
+                    if len(args) == 0:
+                        print("** instance id missing **")
+                        return
+                    if len(args) == 1:
+                        print("** attribute name missing **")
+                        return
+                    tt = ('"', "'")
+                    if id_ in all_:
+                        if len(args) == 2:
+                            if type(_dict) == dict:
+                                for key, value in _dict.items():
+                                    if key[0] in tt and value[0] in tt:
+                                        setattr(all_[id_],
+                                                key[1:-1], value[1:-1])
+                                    elif key[0] in ('"', "'"):
+                                        setattr(all_[id_], key[1:-1], value)
+                                    elif value[0] in ('"', "'"):
+                                        setattr(all_[id_], key, value[1:-1])
+                                    else:
+                                        setattr(all_[id_], key, value)
+                                    all_[id_].save()
+                                return
+                            else:
+                                print("** value missing **")
+                                return
+                        elif len(args) == 3:
+                            if _attName[0] in tt and _attValue[0] in tt:
+                                setattr(all_[id_],
+                                        _attName[1:-1], _attValue[1:-1])
+                            elif _attName[0] in ('"', "'"):
+                                if _attName in ("id", "updated_at",
+                                                "created_at"):
+                                    pass
+                                else:
+                                    setattr(all_[id_],
+                                            _attName[1:-1], _attValue)
+                            elif _attValue[0] in ('"', "'"):
+                                setattr(all_[id_], _attName, _attValue[1:-1])
+                            else:
+                                setattr(all_[id_], _attName, _attValue)
+                            all_[id_].save()
+                        return
+                    else:
+                        print('** no instance found **')
+                        return
+            else:
+                print("** class doesn't exist **")
+                return
+        else:
             pass
 
 
