@@ -173,8 +173,12 @@ class HBNBCommand(cmd.Cmd):
         if "." in line or "(" in line or "," in line:
             all_ = models.storage.all()
             class_ = line[: line.index(".")]
+            m = ("show", "update", "destroy")
             if line[-1] == ")" and "(" in line:
                 method_ = line[line.index(".") + 1: line.index("(")]
+                if method_ in m and line[-2:] == "()":
+                    print("** instance id missing **")
+                    return
             else:
                 print("** method doesn't exist **")
                 return
@@ -189,14 +193,14 @@ class HBNBCommand(cmd.Cmd):
                 if " " in line[l_i + 1:] or "," in line[l_i + 1:]:
                     args = line[line.index("(") + 1: -1].split(", ")
         # User.update("id", {'first_name': "John", "age": 89})
-                    # if len(args) == 3:
-                    #     _id = args[0][1:-1]
-                    #     _attName = args[1]
-                    #     _attValue = args[2]
-                    # elif len(args) == 2:
-                    #     _id = args[0][1:-1]
-                    #     if args[1].startswith("{"):
-                    #         _dict = args[1]
+                    if len(args) == 3:
+                        _id = args[0][1:-1]
+                        _attName = args[1]
+                        _attValue = args[2]
+                    elif len(args) == 2:
+                        _id = args[0][1:-1]
+                        if args[1].startswith("{"):
+                            _dict = args[1]
                 else:
                     _id = line[line.index("(") + 2: line.index(")") - 1]
 
@@ -217,6 +221,9 @@ class HBNBCommand(cmd.Cmd):
                         return
                     # User.show("246c227a-d5c1-403d-9bc7-6a47bb9f0f68")
                     elif method_ == "show":
+                        if not _id:
+                            print("** instance id missing **")
+                            return
                         id_ = class_ + "." + _id
                         # print("Show!")
                         if id_ in all_:
@@ -227,6 +234,9 @@ class HBNBCommand(cmd.Cmd):
                             print('** no instance found **')
                             return
                     elif method_ == "destroy":
+                        if not _id:
+                            print("** instance id missing **")
+                            return
                         id_ = class_ + "." + _id
                         if id_ in all_:
                             del (all_[id_])
@@ -235,35 +245,46 @@ class HBNBCommand(cmd.Cmd):
                         else:
                             print('** no instance found **')
                             return
+# ================================================================
+# ================================================================
+# ================================================================
                     elif method_ == "update":
                         _dict = {}
-                        # id_ = class_ + "." + _id
                         if len(args) == 3:
                             _id = args[0][1:-1]
+                            if not _id:
+                                print("** instance id missing **")
+                                return
                             _attName = args[1]
                             _attValue = args[2]
                         elif len(args) == 2:
                             _id = args[0][1:-1]
-                            if args[1].startswith("{"):
-                                for key, value in args[1]:
-                                    _dict[key] = value
-    # User.update("id", {'first_name': "John", "age": 89})
-                        id_ = class_ + "." + _id
-                        if len(args) == 0:
-                            print("** instance id missing **")
-                            return
                         if len(args) == 1:
                             print("** attribute name missing **")
                             return
-                        tt = ('"', "'")
+                        id_ = class_ + "." + _id
+                        t = ('"', "'")
                         if id_ in all_:
                             if len(args) == 2:
-                                if type(_dict) == dict:
+                                _id = args[0][1:-1]
+                                if args[1].startswith("{"):
+                                    arg_ = args[1][1:-1]
+                                    arg = arg_.split(", ")
+                                    for i in arg:
+                                        _key = i[:i.index(":")].strip()
+                                        _value = i[i.index(":") + 1:].strip()
+                                        _dict[_key] = _value
                                     for key, value in _dict.items():
-                                        if value[0] in tt and value[-1] in tt:
+                                        if value[0] in t and value[-1] in t:
+                                            if key[0] in t and key[-1] in t:
+                                                setattr(all_[id_],
+                                                        eval(key), value[1:-1])
                                             setattr(all_[id_],
                                                     key, value[1:-1])
                                         else:
+                                            if key[0] in t and key[-1] in t:
+                                                setattr(all_[id_],
+                                                        eval(key), eval(value))
                                             setattr(all_[id_],
                                                     key, eval(value))
                                         all_[id_].save()
@@ -272,10 +293,25 @@ class HBNBCommand(cmd.Cmd):
                                     print("** value missing **")
                                     return
                             elif len(args) == 3:
-                                if _attValue[0] in tt and _attValue[-1] in tt:
+                                _id = args[0][1:-1]
+                                if not _id:
+                                    print("** instance id missing **")
+                                    return
+                                _attName = args[1].strip()
+                                _attValue = args[2].strip()
+                                if _attValue[0] in t and _attValue[-1] in t:
+                                    if _attName[0] in t and _attName[-1] in t:
+                                        setattr(all_[id_],
+                                                _attName[1:-1],
+                                                _attValue[1:-1])
                                     setattr(all_[id_],
                                             _attName, _attValue[1:-1])
                                 else:
+                                    if _attName[0] in t and _attName[-1] in t:
+                                        setattr(all_[id_],
+                                                _attName[1:-1],
+                                                eval(_attValue))
+                                    _attValue = _attValue.strip()
                                     setattr(all_[id_],
                                             _attName, eval(_attValue))
                                 all_[id_].save()
