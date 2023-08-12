@@ -172,7 +172,6 @@ class HBNBCommand(cmd.Cmd):
                             value = args[3]
                         value = args[3][1:-1]
 
-
                 setattr(all_[id_], args[2], value)
 
             all_[id_].save()
