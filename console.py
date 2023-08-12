@@ -17,7 +17,7 @@ class HBNBCommand(cmd.Cmd):
     """Class Constructor"""
 
     prompt = '(hbnb) '
-    Classes_Name = ['BaseModel', 'User', 'City', 'State'
+    Classes_Name = ['BaseModel', 'User', 'City', 'State',
                     'Amenity', 'Place', 'Review']
     Methods = ["all", "count", "show", "update", "destroy", "create"]
 
