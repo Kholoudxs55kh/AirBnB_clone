@@ -35,7 +35,7 @@ class HBNBCommand(cmd.Cmd):
     def emptyline(self):
         """Passes The EmptyLines
         """
-        return super().emptyline()
+        pass
 
     def do_create(self, line):
         """Creates a New Instance
