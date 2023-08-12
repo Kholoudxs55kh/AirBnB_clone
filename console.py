@@ -155,9 +155,16 @@ class HBNBCommand(cmd.Cmd):
         id_ = args[0] + "." + args[1]
         if id_ in all_:
             if args[3][0] in ("'", '"') and args[3][-1] in ("'", '"'):
-                setattr(all_[id_], args[2], args[3][1:-1])
-            else:
-                setattr(all_[id_], args[2], eval(args[3]))
+                try:
+                    value = int(args[3][1:-1])
+                except ValueError:
+                    try:
+                        value = float(args[3][1:-1])
+                    except ValueError:
+                        value = args[3][1:-1]
+
+                setattr(all_[id_], args[2], value)
+
             all_[id_].save()
         else:
             print('** no instance found **')
