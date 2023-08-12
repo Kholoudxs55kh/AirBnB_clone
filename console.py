@@ -18,7 +18,8 @@ class HBNBCommand(cmd.Cmd):
 
     prompt = '(hbnb) '
     Classes_Name = ['BaseModel', 'User', 'City', 'State'
-                   'Amenity', 'Place', 'Review']
+                    'Amenity', 'Place', 'Review']
+    Methods = ["all", "count", "show", "update", "destroy", "create"]
 
     def do_quit(self, line):
         """Quits The Program
@@ -46,6 +47,7 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
         # now in the 1st arg we have the Class Name,
@@ -65,11 +67,13 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
 
-        if len(line) == 1:
+        if len(args) == 1:
             print("** instance id missing **")
+            return
 
         all_ = models.storage.all()
 
@@ -78,6 +82,7 @@ class HBNBCommand(cmd.Cmd):
             print(all_[id_])
         else:
             print('** no instance found **')
+            return
 
     def do_destroy(self, line):
         """Deletes an instance based on the class name and id"""
@@ -89,11 +94,13 @@ class HBNBCommand(cmd.Cmd):
         try:
             if args[0] not in self.Classes_Name:
                 print("** class doesn't exist **")
+                return
         except NameError:
             pass
 
-        if len(line) == 1:
+        if len(args) == 1:
             print("** instance id missing **")
+            return
 
         all_ = models.storage.all()
         id_ = args[0] + "." + args[1]
@@ -102,6 +109,7 @@ class HBNBCommand(cmd.Cmd):
             models.storage.save()
         else:
             print('** no instance found **')
+            return
 
     def do_all(self, line):
         """Prints all string representation of all instances"""
@@ -117,9 +125,172 @@ class HBNBCommand(cmd.Cmd):
                         print([str(value)])
             else:
                 print("** class doesn't exist **")
+                return
 
-    def do_update(self):
-        pass
+    def do_update(self, line):
+        """Updates an Attribute"""
+        if len(line) == 0:
+            print("** class name missing **")
+            return
+        args = line.split(" ")
+
+        try:
+            if args[0] not in self.Classes_Name:
+                print("** class doesn't exist **")
+                return
+        except NameError:
+            pass
+
+        if len(args) == 1:
+            print("** instance id missing **")
+            return
+
+        all_ = models.storage.all()
+        id_ = args[0] + "." + args[1]
+        if id_ in all_:
+            if args[3][0] in ("'", '"') and args[3][-1] in ("'", '"'):
+                setattr(all_[id_], args[2], args[3][1:-1])
+            else:
+                setattr(all_[id_], args[2], eval(args[3]))
+            all_[id_].save()
+        else:
+            print('** no instance found **')
+            return
+
+        if len(args) == 2:
+            print("** attribute name missing **")
+            return
+
+        if len(args) == 3:
+            print("** value missing **")
+            return
+
+        if len(args) > 4:
+            pass
+
+# User.show("246c227a-d5c1-403d-9bc7-6a47bb9f0f68")
+    def default(self, line):
+        if "." in line or "(" in line or "," in line:
+            all_ = models.storage.all()
+            class_ = line[: line.index(".")]
+            if line[-1] == ")" and "(" in line:
+                method_ = line[line.index(".") + 1: line.index("(")]
+            else:
+                print("** method doesn't exist **")
+                return
+            # if line[line.index("(") + 1] == ")":
+            # idd = line[line.index("(") + 1: line.index(")")]
+            # method_ = line[line.index(".") + 1: line.index("(")]
+
+            if line[line.index("(") + 1] != ")":
+                # class_ = line[: line.index(".")]
+                # method_ = line[line.index(".") + 1: line.index("(")]()
+                l_i = line.index("(")
+                if " " in line[l_i + 1:] or "," in line[l_i + 1:]:
+                    args = line[line.index("(") + 1: -1].split(", ")
+        # User.update("id", {'first_name': "John", "age": 89})
+                    # if len(args) == 3:
+                    #     _id = args[0][1:-1]
+                    #     _attName = args[1]
+                    #     _attValue = args[2]
+                    # elif len(args) == 2:
+                    #     _id = args[0][1:-1]
+                    #     if args[1].startswith("{"):
+                    #         _dict = args[1]
+                else:
+                    _id = line[line.index("(") + 2: line.index(")") - 1]
+
+            if class_ in self.Classes_Name:
+                if method_ in self.Methods or method_[-2:] != "()":
+                    if method_ == "all":
+                        for value in all_.values():
+                            if value.__class__.__name__ == class_:
+                                print([str(value)])
+                        return
+
+                    elif method_ == "count":
+                        count = 0
+                        for value in all_.values():
+                            if value.__class__.__name__ == class_:
+                                count += 1
+                        print(int(count))
+                        return
+                    # User.show("246c227a-d5c1-403d-9bc7-6a47bb9f0f68")
+                    elif method_ == "show":
+                        id_ = class_ + "." + _id
+                        # print("Show!")
+                        if id_ in all_:
+                            print(all_[id_])
+                            # print("Show!")
+                            return
+                        else:
+                            print('** no instance found **')
+                            return
+                    elif method_ == "destroy":
+                        id_ = class_ + "." + _id
+                        if id_ in all_:
+                            del (all_[id_])
+                            models.storage.save()
+                            return
+                        else:
+                            print('** no instance found **')
+                            return
+                    elif method_ == "update":
+                        _dict = {}
+                        # id_ = class_ + "." + _id
+                        if len(args) == 3:
+                            _id = args[0][1:-1]
+                            _attName = args[1]
+                            _attValue = args[2]
+                        elif len(args) == 2:
+                            _id = args[0][1:-1]
+                            if args[1].startswith("{"):
+                                for key, value in args[1]:
+                                    _dict[key] = value
+    # User.update("id", {'first_name': "John", "age": 89})
+                        id_ = class_ + "." + _id
+                        if len(args) == 0:
+                            print("** instance id missing **")
+                            return
+                        if len(args) == 1:
+                            print("** attribute name missing **")
+                            return
+                        tt = ('"', "'")
+                        if id_ in all_:
+                            if len(args) == 2:
+                                if type(_dict) == dict:
+                                    for key, value in _dict.items():
+                                        if value[0] in tt and value[-1] in tt:
+                                            setattr(all_[id_],
+                                                    key, value[1:-1])
+                                        else:
+                                            setattr(all_[id_],
+                                                    key, eval(value))
+                                        all_[id_].save()
+                                    return
+                                else:
+                                    print("** value missing **")
+                                    return
+                            elif len(args) == 3:
+                                if _attValue[0] in tt and _attValue[-1] in tt:
+                                    setattr(all_[id_],
+                                            _attName, _attValue[1:-1])
+                                else:
+                                    setattr(all_[id_],
+                                            _attName, eval(_attValue))
+                                all_[id_].save()
+                            return
+                        else:
+                            print('** no instance found **')
+                            return
+                else:
+                    print("** method doesn't exist **")
+                    return
+            else:
+                print("** class doesn't exist **")
+                return
+        else:
+            pass
 
 
 if __name__ == '__main__':
