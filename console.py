@@ -150,6 +150,13 @@ class HBNBCommand(cmd.Cmd):
         if len(args) == 1:
             print("** instance id missing **")
             return
+        if len(args) == 2:
+            print("** attribute name missing **")
+            return
+
+        if len(args) == 3:
+            print("** value missing **")
+            return
 
         all_ = models.storage.all()
         id_ = args[0] + "." + args[1]
@@ -161,21 +168,16 @@ class HBNBCommand(cmd.Cmd):
                     try:
                         value = float(args[3][1:-1])
                     except ValueError:
+                        if " " in args[3]:
+                            value = args[3]
                         value = args[3][1:-1]
+
 
                 setattr(all_[id_], args[2], value)
 
             all_[id_].save()
         else:
             print('** no instance found **')
-            return
-
-        if len(args) == 2:
-            print("** attribute name missing **")
-            return
-
-        if len(args) == 3:
-            print("** value missing **")
             return
 
         if len(args) > 4:
