@@ -26,6 +26,7 @@ class TestFileStorage(unittest.TestCase):
     def tearDown(cls):
         """Remove JSON file (Aras.json) after executing
         """
+        del cls._model
         try:
             os.remove("../../../Aras.json")
         except Exception:
