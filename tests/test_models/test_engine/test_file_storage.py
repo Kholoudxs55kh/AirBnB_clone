@@ -14,9 +14,27 @@ from models.engine.file_storage import FileStorage
 
 
 class TestFileStorage(unittest.TestCase):
-    ''' test the FileStorage'''
+    """test the FileStorage
+    """
+    @classmethod
+    def tearDown(cls):
+        """Remove JSON file (Aras.json) after executing
+        """
+        try:
+            os.remove("../../../Aras.json")
+        except Exception:
+            pass
 
-    def testing_all(self):
+    def test_docstrings(self):
+        """Testing docstrings
+        """
+        self.assertIsNotNone(FileStorage.__doc__)
+        self.assertIsNotNone(FileStorage.all.__doc__)
+        self.assertIsNotNone(FileStorage.new.__doc__)
+        self.assertIsNotNone(FileStorage.save.__doc__)
+        self.assertIsNotNone(FileStorage.reload.__doc__)
+
+    def test_all(self):
         """test all method"""
         storage = FileStorage()
         obj = storage.all()
@@ -24,7 +42,7 @@ class TestFileStorage(unittest.TestCase):
         self.assertEqual(type(obj), dict)
         self.assertIs(obj, storage._FileStorage__objects)
 
-    def testing_new(self):
+    def test_new(self):
         """testing new"""
         storage = FileStorage()
         obj = storage.all()
@@ -34,7 +52,7 @@ class TestFileStorage(unittest.TestCase):
         storage.new(user)
         key = user.__class__.__name__ + "." + str(user.id)
         self.assertIsNotNone(obj[key])
-
+       
 
 if __name__ == "__main__":
     unittest.main()
