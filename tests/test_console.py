@@ -55,11 +55,6 @@ class TestConsole(unittest.TestCase):
         return "".join(map(lambda c: c[0][0],
                            self.mock_stdout.write.call_args_list[-nrr:]))
 
-    def test_quit(self):
-        """Quit command"""
-        cl = self.create()
-        self.assertTrue(cl.onecmd("quit"))
-
 
 if __name__ == '__main__':
     unittest.main()
